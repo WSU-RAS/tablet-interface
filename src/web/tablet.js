@@ -69,7 +69,8 @@ ros.on('close', function() {
 // Create a connection to the rosbridge WebSocket server.
 //
 // For this demo, we'll assume it's on localhost.
-ros.connect('ws://brian-gpu.ailab.wsu.edu:9090');
+//ros.connect('ws://brian-gpu.ailab.wsu.edu:9090');
+ros.connect('ws://wsu-ras-joule.ailab.wsu.edu:9090');
 
 // Calling a service
 // -----------------
@@ -77,7 +78,7 @@ ros.connect('ws://brian-gpu.ailab.wsu.edu:9090');
 this.tabletResponse = new ROSLIB.Service({
     ros : ros,
     name : '/tablet_response',
-    serviceType : 'object_detection_msgs/TabletOption'
+    serviceType : 'tablet_interface/TabletOption'
 });
 
 // Advertising a Service
@@ -87,7 +88,7 @@ this.tabletResponse = new ROSLIB.Service({
 var setBoolServer = new ROSLIB.Service({
     ros : ros,
     name : '/tablet',
-    serviceType : 'object_detection_msgs/Tablet'
+    serviceType : 'tablet_interface/Tablet'
 });
 
 // Note: this will later be some sort of action but I'll change that later
