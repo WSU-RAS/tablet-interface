@@ -10,6 +10,7 @@ project(tablet_interface)
 find_package(catkin REQUIRED COMPONENTS
   message_generation
   message_runtime
+  rospy
   rosbridge
   std_msgs
 )
