@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   message_runtime
   rospy
-  rosbridge
+  rosbridge_server
   std_msgs
 )
 
@@ -107,9 +107,9 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES tablet_interface
-#  CATKIN_DEPENDS message_generation message_runtime rosbridge std_msgs
+#  CATKIN_DEPENDS message_generation message_runtime rosbridge_server std_msgs
 #  DEPENDS system_lib
-  CATKIN_DEPENDS message_runtime
+#  CATKIN_DEPENDS message_runtime
 )
 
 ###########
