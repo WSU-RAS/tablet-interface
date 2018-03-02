@@ -8,4 +8,4 @@ Tablet interface using rosbridge and a web server
 
 ## Installing
 
-    sudo apt install python-tornado
+    sudo apt install python-tornado python-bson
