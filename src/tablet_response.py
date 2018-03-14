@@ -8,7 +8,7 @@ Access via:
     rosservice call /tablet_response "your response"
 """
 import rospy
-from object_detection_msgs.srv import TabletOption, TabletOptionResponse
+from tablet_interface.srv import TabletOption, TabletOptionResponse
 
 class TabletResponseService:
     def __init__(self):

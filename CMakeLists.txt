@@ -60,6 +60,7 @@ add_service_files(
   FILES
   Tablet.srv
   TabletOption.srv
+  Task.srv
 )
 
 ## Generate actions in the 'action' folder
