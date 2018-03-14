@@ -75,10 +75,10 @@ ros.connect('ws://wsu-ras-joule.ailab.wsu.edu:9090');
 // Calling a service
 // -----------------
 
-this.tabletResponse = new ROSLIB.Service({
+this.tabletResponse = new ROSLIB.ActionClient({
     ros : ros,
-    name : '/tablet_response',
-    serviceType : 'tablet_interface/TabletOption'
+    serverName: '/tablet_response',
+    actionName: 'ras_msgs/TabletGotoAction'
 });
 
 // Advertising a Service
@@ -93,8 +93,22 @@ var setBoolServer = new ROSLIB.Service({
 
 // Note: this will later be some sort of action but I'll change that later
 function sendROSResponse(msg) {
-    var request = new ROSLIB.ServiceRequest({ response: msg });
-    this.tabletResponse.callService(request, function(result) { });
+    var goal = new ROSLIB.Goal({
+        actionClient: this.tabletResponse,
+        goalMessage: {
+            response: msg
+        }
+    });
+
+    goal.on('feedback', function(feedback) {
+        console.log('Feedback: ' + feedback.text);
+    });
+
+    goal.on('result', function(result) {
+        console.log('Result: ' + result.success);
+    });
+
+    goal.send();
 }
 
 // Use the advertise() method to indicate that we want to provide this service
