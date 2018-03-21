@@ -31,3 +31,6 @@ listener.subscribe(function(message) {
     // If desired, we can unsubscribe from the topic as well.
     //listener.unsubscribe();
 });
+
+// Connect to ROS
+autoReconnect(function () {});

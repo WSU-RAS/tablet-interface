@@ -1,20 +1,9 @@
 // Calling a service
 // -----------------
-
 tabletResponse = new ROSLIB.ActionClient({
     ros : ros,
     serverName: '/tablet_response',
     actionName: 'ras_msgs/TabletGotoAction'
-});
-
-// Advertising a Service
-// ---------------------
-
-// The Service object does double duty for both calling and advertising services
-var setBoolServer = new ROSLIB.Service({
-    ros : ros,
-    name : '/tablet',
-    serviceType : 'tablet_interface/Tablet'
 });
 
 // Note: this will later be some sort of action but I'll change that later
@@ -36,27 +25,6 @@ function sendROSResponse(msg) {
 
     goal.send();
 }
-
-// Use the advertise() method to indicate that we want to provide this service
-setBoolServer.advertise(function(request, response) {
-    var screen = request["screen"];
-
-    // Update global state
-    state = State.clone(request);
-
-    // Show desired screen
-    switch (screen) {
-        case "default": showDefault(); break;
-        case "choice":  showChoice();  break;
-        case "options": showOptions(); break;
-        default:
-            console.log("Unknown screen");
-            break;
-    }
-
-    response['success'] = true;
-    return true;
-});
 
 // Commands for Web UI
 // -------------------
@@ -198,3 +166,36 @@ document.getElementById("buttonGoTo").onclick = function() {
 document.getElementById("buttonComplete").onclick = function() {
     respondOptions("complete");
 }
+
+// Connect to ROS and automatically reconnect, creating the tablet service each time
+autoReconnect(function () {
+    // Advertising a Service
+    // ---------------------
+    // The Service object does double duty for both calling and advertising services
+    var tablet = new ROSLIB.Service({
+        ros : ros,
+        name : '/tablet',
+        serviceType : 'tablet_interface/Tablet'
+    });
+
+    // Use the advertise() method to indicate that we want to provide this service
+    tablet.advertise(function(request, response) {
+        var screen = request["screen"];
+
+        // Update global state
+        state = State.clone(request);
+
+        // Show desired screen
+        switch (screen) {
+            case "default": showDefault(); break;
+            case "choice":  showChoice();  break;
+            case "options": showOptions(); break;
+            default:
+                console.log("Unknown screen");
+                break;
+        }
+
+        response['success'] = true;
+        return true;
+    });
+});

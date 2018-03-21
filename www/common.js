@@ -53,11 +53,9 @@ state = State.clone();
 // Connecting to ROS
 // -----------------
 ros = new ROSLIB.Ros();
-ros.connected = false;
 
 // If there is an error on the backend, an 'error' emit will be emitted.
 ros.on('error', function(error) {
-    this.connected = false;
     document.getElementById('connecting').style.display = 'none';
     document.getElementById('connected').style.display = 'none';
     document.getElementById('closed').style.display = 'none';
@@ -65,9 +63,7 @@ ros.on('error', function(error) {
     console.log(error);
 });
 
-// Find out exactly when we made a connection.
 ros.on('connection', function() {
-    this.connected = true;
     console.log('Connection made!');
     document.getElementById('connecting').style.display = 'none';
     document.getElementById('error').style.display = 'none';
@@ -76,7 +72,6 @@ ros.on('connection', function() {
 });
 
 ros.on('close', function() {
-    this.connected = false;
     console.log('Connection closed.');
     document.getElementById('connecting').style.display = 'none';
     document.getElementById('connected').style.display = 'none';
@@ -84,17 +79,21 @@ ros.on('close', function() {
 });
 
 // Create a connection to the rosbridge WebSocket server.
-// See if we're connected every once in a while and try to connect if we're not
-function reconnect() {
-    if (ros.connected != true) {
+//
+function reconnect(f) {
+    if (ros.isConnected != true) {
         console.log("Reconnecting")
-
-		//if ("casas" in urlParams) {
 		ros.connect('ws://'+window.location.hostname+':9090');
-        //} else {
-        //    ros.connect('ws://wsu-ras-joule.kyoto.local:9090');
-        //}
+
+        // Do something after reconnecting
+        f();
     }
 }
-reconnect();
-setInterval(reconnect, 10000);
+
+// See if we're connected every once in a while and try to connect if we're not
+// Allow passing a function that does something after connecting, e.g. setting
+// up services
+function autoReconnect(f) {
+    reconnect(f);
+    setInterval(function() { reconnect(f); }, 10000);
+}

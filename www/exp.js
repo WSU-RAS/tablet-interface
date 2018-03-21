@@ -86,3 +86,6 @@ listener.subscribe(function(message) {
 } 
 
 });
+
+// Connect to ROS
+autoReconnect(function () {});
