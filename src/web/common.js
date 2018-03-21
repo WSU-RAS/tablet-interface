@@ -1,4 +1,5 @@
 // Query parameters
+// From: https://stackoverflow.com/a/2880929/2698494
 urlParams = {};
 (window.onpopstate = function () {
     var match,
