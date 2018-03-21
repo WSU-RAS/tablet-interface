@@ -30,16 +30,23 @@ function sendROSResponse(msg) {
 // -------------------
 
 function showOne(screen) {
-    var screens = ['default','choice','options','video'];
+    var screens = ['init','default','choice','options','video'];
     
+    // Stop audio if currently playing
     var sound = document.getElementById("audio-wrapper");
-    sound.pause();
     var asource = document.getElementById("audio-source");
-    asource.setAttribute('src', "");
+    if (asource.getAttribute('src') != "") {
+        sound.pause();
+        asource.setAttribute('src', "");
+    }
+
+    // Stop video if currently playing
     var vid = document.getElementById("video-wrapper");
-    vid.pause();
     var vsource = document.getElementById("video-source");
-    vsource.setAttribute('src', "");
+    if (vsource.getAttribute('src') != "") {
+        vid.pause();
+        vsource.setAttribute('src', "");
+    }
 
     // Hide all others
     for (var i = 0; i < screens.length; ++i)
@@ -54,7 +61,6 @@ function showOne(screen) {
 
 // Multimedia
 function playSound(audioURL) {
-    
     var sound = document.getElementById("audio-wrapper");
     var source = document.getElementById("audio-source");
     source.setAttribute('src', audioURL);
@@ -90,11 +96,12 @@ function showDefault() {
 }
 function showChoice() {
     showOne('choice');
-    playSound('help-you.mp3');
+    playSound('resources/help-you.mp3');
     document.getElementById("face").src = state.faceURL;
 }
 function showOptions() {
     showOne('options');
+    playSound('resources/select-options.mp3');
 
     // Only show the "go to object" button if there is an object for this error
     if (state.objectName.length > 0) {
@@ -107,8 +114,6 @@ function showOptions() {
 
 // User response
 function respondChoice(choice) {
-    playSound('select-options.mp3');
-
     var request;
     if (choice == true) {
         sendROSResponse("yes");
@@ -165,6 +170,12 @@ document.getElementById("buttonGoTo").onclick = function() {
 }
 document.getElementById("buttonComplete").onclick = function() {
     respondOptions("complete");
+}
+document.getElementById("buttonInit").onclick = function() {
+    showDefault();
+    
+    // This appears to fix the not playing on first call problem
+    playSound("");
 }
 
 // Connect to ROS and automatically reconnect, creating the tablet service each time

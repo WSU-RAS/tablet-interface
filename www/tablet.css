@@ -9,8 +9,8 @@
     display: none;
 }
 
-/* Hide all but default screen on load */
-#choice, #options, #video {
+/* Hide all but the init screen on load */
+#choice, #options, #video, #default {
     display: none;
 }
 
