@@ -17,10 +17,13 @@
    * Setup all visualization elements when the page is loaded.
    */
   function init() {
+    /* This is already done in common.js, you can now access ros via the global variable
     // Connect to ROS.
     var ros = new ROSLIB.Ros({
-      url : 'ws://wsu-ras-joule.ailab.wsu.edu:9090'
+      url : 'ws://wsu-ras-joule.kyoto.local:9090'
+      //url : 'ws://wsu-ras-joule.ailab.wsu.edu:9090'
     });
+    */
 
     // Create the main viewer.
     var viewer = new ROS2D.Viewer({
@@ -107,6 +110,7 @@
  <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
  <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>     
  
+ <script type="text/javascript" src="common.js"></script>
  <script type="text/javascript" src="exp.js"></script>
 
 

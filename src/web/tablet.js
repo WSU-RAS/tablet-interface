@@ -1,81 +1,7 @@
-// State
-//
-// I've never done Javascript objects before, so this may not be the best way
-// to do it.
-//
-// https://gist.github.com/hallettj/64478
-if (typeof Object.create !== 'function') {
-    Object.create = function(o) {
-        var F = function() {};
-        F.prototype = o;
-        return new F();
-    };
-}
-
-var State = {
-    clone: function(d) {
-        var newState = Object.create(this);
-
-        if (d !== undefined) {
-            newState.screen = d["screen"];
-            newState.objectName = d["object"];
-            newState.faceURL = d["face_url"];
-            newState.videoStepURL = d["video_step_url"];
-            newState.videoFullURL = d["video_full_url"];
-            newState.audioURL = d["audio_url"];
-        } else {
-            newState.screen = "default";
-            newState.objectName = "";
-            newState.faceURL = "";
-            newState.videoStepURL = "";
-            newState.videoFullURL = "";
-            newState.audioURL = "";
-        }
-        return newState;
-    }
-};
-
-this.state = State.clone();
-
-// Connecting to ROS
-// -----------------
-var ros = new ROSLIB.Ros();
-
-// If there is an error on the backend, an 'error' emit will be emitted.
-ros.on('error', function(error) {
-    document.getElementById('connecting').style.display = 'none';
-    document.getElementById('connected').style.display = 'none';
-    document.getElementById('closed').style.display = 'none';
-    document.getElementById('error').style.display = 'inline';
-    console.log(error);
-});
-
-// Find out exactly when we made a connection.
-ros.on('connection', function() {
-    console.log('Connection made!');
-    document.getElementById('connecting').style.display = 'none';
-    document.getElementById('error').style.display = 'none';
-    document.getElementById('closed').style.display = 'none';
-    document.getElementById('connected').style.display = 'inline';
-});
-
-ros.on('close', function() {
-    console.log('Connection closed.');
-    document.getElementById('connecting').style.display = 'none';
-    document.getElementById('connected').style.display = 'none';
-    document.getElementById('closed').style.display = 'inline';
-});
-
-// Create a connection to the rosbridge WebSocket server.
-//
-// For this demo, we'll assume it's on localhost.
-//ros.connect('ws://brian-gpu.ailab.wsu.edu:9090');
-ros.connect('ws://wsu-ras-joule.ailab.wsu.edu:9090');
-
 // Calling a service
 // -----------------
 
-this.tabletResponse = new ROSLIB.ActionClient({
+tabletResponse = new ROSLIB.ActionClient({
     ros : ros,
     serverName: '/tablet_response',
     actionName: 'ras_msgs/TabletGotoAction'
@@ -94,7 +20,7 @@ var setBoolServer = new ROSLIB.Service({
 // Note: this will later be some sort of action but I'll change that later
 function sendROSResponse(msg) {
     var goal = new ROSLIB.Goal({
-        actionClient: this.tabletResponse,
+        actionClient: tabletResponse,
         goalMessage: {
             response: msg
         }
@@ -189,23 +115,23 @@ function playVideo(url) {
 // Show screen
 function showDefault() {
     showOne('default');
-    if (this.state.faceURL.length > 0) {
-        document.getElementById("default-face").src = this.state.faceURL;
+    if (state.faceURL.length > 0) {
+        document.getElementById("default-face").src = state.faceURL;
         document.getElementById("default-face").load();
     }
 }
 function showChoice() {
     showOne('choice');
-    playSound(this.state.audioURL);
-    document.getElementById("face").src = this.state.faceURL;
+    playSound(state.audioURL);
+    document.getElementById("face").src = state.faceURL;
 }
 function showOptions() {
     showOne('options');
 
     // Only show the "go to object" button if there is an object for this error
-    if (this.state.objectName.length > 0) {
+    if (state.objectName.length > 0) {
         document.getElementById("buttonGoTo").style.display = 'inline';
-        document.getElementById("object").innerHTML = this.state.objectName
+        document.getElementById("object").innerHTML = state.objectName
     } else {
         document.getElementById("buttonGoTo").style.display = 'none';
     }
@@ -213,7 +139,7 @@ function showOptions() {
 
 // User response
 function respondChoice(choice) {
-    playSound(this.state.audioURL);
+    playSound(state.audioURL);
 
     var request;
     if (choice == true) {
@@ -229,10 +155,10 @@ function respondOptions(option) {
 
     switch (option) {
         case "watchfull":
-            playVideo(this.state.videoFullURL);
+            playVideo(state.videoFullURL);
             break;
         case "watchstep":
-            playVideo(this.state.videoStepURL);
+            playVideo(state.videoStepURL);
             break;
         case "goto":
             // Either here show the options screen and play the "follow me"
