@@ -122,7 +122,7 @@ function showDefault() {
 }
 function showChoice() {
     showOne('choice');
-    playSound(state.audioURL);
+    playSound('help-you.mp3');
     document.getElementById("face").src = state.faceURL;
 }
 function showOptions() {
@@ -139,7 +139,7 @@ function showOptions() {
 
 // User response
 function respondChoice(choice) {
-    playSound(state.audioURL);
+    playSound('select-options.mp3');
 
     var request;
     if (choice == true) {
@@ -161,11 +161,9 @@ function respondOptions(option) {
             playVideo(state.videoStepURL);
             break;
         case "goto":
-            // Either here show the options screen and play the "follow me"
-            // sound or let the manager send another command to play that sound
-            // file and show the options screen
-            //
-            // For now, just show default screen:
+            showDefault();
+            break;
+        case "complete":
             showDefault();
             break;
         default:
@@ -175,16 +173,10 @@ function respondOptions(option) {
 }
 function respondVideoDone() {
     sendROSResponse("videodone");
-
-    // Probably go back to options? Maybe manager node will send another
-    // command.
     showDefault();
 }
 function respondAudioDone() {
     sendROSResponse("audiodone");
-
-    // Probably go back to options? Maybe manager node will send another
-    // command.
 }
 
 // Selecting buttons
@@ -202,4 +194,7 @@ document.getElementById("buttonVideoStep").onclick = function() {
 }
 document.getElementById("buttonGoTo").onclick = function() {
     respondOptions("goto");
+}
+document.getElementById("buttonComplete").onclick = function() {
+    respondOptions("complete");
 }

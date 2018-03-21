@@ -37,14 +37,12 @@ var State = {
             newState.faceURL = d["face_url"];
             newState.videoStepURL = d["video_step_url"];
             newState.videoFullURL = d["video_full_url"];
-            newState.audioURL = d["audio_url"];
         } else {
             newState.screen = "default";
             newState.objectName = "";
             newState.faceURL = "";
             newState.videoStepURL = "";
             newState.videoFullURL = "";
-            newState.audioURL = "";
         }
         return newState;
     }
