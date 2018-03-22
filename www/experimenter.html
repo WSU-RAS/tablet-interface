@@ -2,111 +2,119 @@
 <html>
 <head>
 <meta charset="utf-8" />
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<style>
+@media (max-width: 779px) {
+  .btn{
+     margin-bottom:8px;
+ }
+</style>
+
 <script src="https://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
-<!-- <script src="../build/roslib.js"></script> -->
 
 <script type="text/javascript" src="http://cdn.robotwebtools.org/EaselJS/current/easeljs.min.js"></script>
 <script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
 <script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
 <script type="text/javascript" src="http://cdn.robotwebtools.org/ros2djs/current/ros2d.min.js"></script>
 
-
-
 <script type="text/javascript" type="text/javascript">
   /**
    * Setup all visualization elements when the page is loaded.
    */
   function init() {
-    /* This is already done in common.js, you can now access ros via the global variable
-    // Connect to ROS.
-    var ros = new ROSLIB.Ros({
-      url : 'ws://wsu-ras-joule.kyoto.local:9090'
-      //url : 'ws://wsu-ras-joule.ailab.wsu.edu:9090'
-    });
-    */
-
-    // Create the main viewer.
+    /* Create the main viewer. */
     var viewer = new ROS2D.Viewer({
       divID : 'map',
       width : 600,
       height : 500
     });
 
-    // Setup the map client.
+    /* Setup the map client. */
     var gridClient = new ROS2D.OccupancyGridClient({
       ros : ros,
       rootObject : viewer.scene
     });
-    // Scale the canvas to fit to the map
+    /* Scale the canvas to fit to the map */
     gridClient.on('change', function(){
       viewer.scaleToDimensions(gridClient.currentGrid.width, gridClient.currentGrid.height);
     });
   }
 </script>
 
-
-
 </head>
 
 <body onload="init()">
-  <h1>Experimentor User Interface</h1>
-  <p>Please click the button corrosponding to the current task!</p>
+  <div class="container-fluid">
+    <div class="jumbotron">
+      <h1 class="display-5">Experimentor UI</h1>
+      <p class="lead">This is used by the experimenter to start and end task during RAS Experiments.</p>
+      <hr class="my-2">
+      <p>Please click the button corresponding to the current task:</p>
+      <p class="lead">
+        <button id="takeMedStart" type="button" class="btn btn-primary btn-lg">Take Pills Start</button>
+        <button id="takeMedStop" type="button" style="display:none" class="btn btn-danger btn-lg">Take Pills End</button>
 
-    <button onclick="sendTask(1, 2, 'START TAKE MEDS TASK')" type="button">Take Pills Start</button>
-    <button onclick="sendTask(1, 3, 'END TAKE MEDS TASK')" type="button">Take Pills End</button>
+        <button id="walkDogStart" type="button" class="btn btn-primary btn-lg">Walk Dog Start</button>
+        <button id="walkDogStop" type="button" style="display:none" class="btn btn-danger btn-lg">Walk Dog End</button>
 
-    <button onclick="sendTask(2, 2, 'START WALK DOG TASK')" type="button">Walk Dog Start</button>
-    <button onclick="sendTask(2, 3, 'END WALK DOG TASK')" type="button">Walk Dog End</button>
+        <button id="waterPlantsStart" type="button" class="btn btn-primary btn-lg">Water Plants Start</button>
+        <button id="waterPlantsStop" type="button" style="display:none" class="btn btn-danger btn-lg">Water Plants End</button>
+      </p>
 
-    <button onclick="sendTask(0, 2, 'START WATER PLANTS TASK')" type="button">Water Plants Start</button>
-    <button onclick="sendTask(0, 3, 'END WATER PLANTS TASK')" type="button">Water Plants End</button>
+      <div class="row">
+        <div class="col">
+          Connection<br/>
+          <div id="connecting">
+            <span class="badge badge-info">CONNECTING TO ROSBRIDGE...</span>
+          </div>
+          <div id="connected" style="display:none">
+            <span class="badge badge-success">GOOD</span>
+          </div>
+          <div id="error" style="display:none">
+            <span class="badge badge-danger">ERROR IN THE BACKEND</span>
+          </div>
+          <div id="closed" style="display:none">
+            <span class="badge badge-dark">CLOSED</span>
+          </div>
+        </div>
 
-  <div id="statusIndicator">
-    <p id="connecting">
-      Connecting to rosbridge...
-    </p>
-    <p id="connected" style="color:#00D600; display:none">
-      Connected
-    </p>
-    <p id="error" style="color:#FF0000; display:none">
-      Error in the backend!
-    </p>
-    <p id="closed" style="display:none">
-      Connection closed.
-    </p>
-  </div>
+        <div class="col">
+          Status<br />
+          <div id="status">
+            <span class="badge badge-dark">---</span>
+          </div>
+        </div>
 
+        <div class="col">
+          Task<br />
+          <div id="task_name">
+            <span class="badge badge-dark">---</span>
+          </div>
+        </div>
 
-  <div id="taskSender">
-    <p id="starting">
-      Nothing sent yet!
-    </p>
-    <p id="success" style="color:#00D600; display:none">
-      Successfully sent the task to Gabe!
-    </p>
-    <p id="failure" style="color:#FF0000; display:none">
-      Failed to send task to Gabe :C
-    </p>
-  </div>
+        <div class="col-7">
+          Battery<br />
+          <div id="battery" style="display:inline">
+            <span class="badge badge-dark">---</span>
+          </div>
+          <div id="batteryPercent" style="display:inline">
+            <span class="badge badge-dark">---</span>
+          </div>
+        </div>
 
-  <p id="task_name">
-    ----
-  </p>
-
-<div style="clear: left;">
-  <p style="float: left;"><img src="battery-icon.png" height="30" width="30"></p>
-  <div style="padding: 21px 21px 30px 21px; margin: 20px">
-    <div id="battery">
-      =====
+      </div>
     </div>
-    <div id="batteryPercent">
-      =====
-    </div>
-  </div>
-</div>
 
-  <h1>Simple Map Example</h1>
-  <div id="map"></div>
+    <div class="row">
+      <div class="col">
+        <h1>Simple Map Example</h1>
+        <div id="map"></div>
+      <div class="col">
+    </div>
+
+  </div>
+
 
  <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
  <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
