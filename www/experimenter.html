@@ -52,13 +52,14 @@
   <h1>Experimentor User Interface</h1>
   <p>Please click the button corrosponding to the current task!</p>
 
-    <button onclick="sendTask('task1')" type="button">Take Pills</button> 
+    <button onclick="sendTask(1, 2, 'START TAKE MEDS TASK')" type="button">Take Pills Start</button>
+    <button onclick="sendTask(1, 3, 'END TAKE MEDS TASK')" type="button">Take Pills End</button>
 
-    <button onclick="sendTask('task2')" type="button">Walk Dog</button> 
+    <button onclick="sendTask(2, 2, 'START WALK DOG TASK')" type="button">Walk Dog Start</button>
+    <button onclick="sendTask(2, 3, 'END WALK DOG TASK')" type="button">Walk Dog End</button>
 
-    <button onclick="sendTask('task3')" type="button">Water Plants</button> 
-
-    <button onclick="sendTask('stop')" type="button">Task Completed</button> 
+    <button onclick="sendTask(0, 2, 'START WATER PLANTS TASK')" type="button">Water Plants Start</button>
+    <button onclick="sendTask(0, 3, 'END WATER PLANTS TASK')" type="button">Water Plants End</button>
 
   <div id="statusIndicator">
     <p id="connecting">
@@ -84,7 +85,7 @@
       Successfully sent the task to Gabe!
     </p>
     <p id="failure" style="color:#FF0000; display:none">
-      Failed to send task to Gabe :C 
+      Failed to send task to Gabe :C
     </p>
   </div>
 
@@ -108,8 +109,8 @@
   <div id="map"></div>
 
  <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
- <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>     
- 
+ <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+
  <script type="text/javascript" src="common.js"></script>
  <script type="text/javascript" src="exp.js"></script>
 

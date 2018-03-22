@@ -1,25 +1,36 @@
 //Send task to Gabe
-function sendTask(task){
+function sendTask(task_num, stat, stat_text){
   var sendTaskClient = new ROSLIB.Service({
     ros : ros,
-    name : '/task',
-    serviceType : 'tablet_interface/Task'
+    //name : '/task',
+    //serviceType : 'tablet_interface/Task'
+    name : '/task_controller',
+    serviceType : 'ras_msgs/TaskController'
   });
 
-var request = new ROSLIB.ServiceRequest({
-    name : task
+  var request = new ROSLIB.ServiceRequest({
+    //name : task
+    id : {
+        stamp : Date.now(),
+        task_number : number
+    },
+    request : {
+        status : stat,  // START=2, END=3
+        text : stat_text
+    }
   });
+
   // Finally, we call the /add_two_ints service and get back the results in the callback. The result
   // is a ROSLIB.ServiceResponse object.
   sendTaskClient.callService(request, function(result) {
-    console.log('Result for service call on ' + sendTaskClient.name + ': ' + result.success);
+    console.log('Result for service call on ' + sendTaskClient.request.text + ': ' + result.status.status + ', ' + result.status.text);
     //On success
-    if (result.succes == true){
+    if (result.status.status == 4){
       document.getElementById('failure').style.display = 'none';
       document.getElementById('success').style.display = 'inline';
     }
     //On Failure
-    if (result.success == false){
+    if (result.status.status == 5){
       document.getElementById('failure').style.display = 'inline';
       document.getElementById('success').style.display = 'none';
     }
@@ -83,7 +94,7 @@ listener.subscribe(function(message) {
       batPercent = "0%";
     }
     document.getElementById('batteryPercent').innerHTML = batPercent;
-} 
+}
 
 });
 

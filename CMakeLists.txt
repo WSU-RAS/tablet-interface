@@ -13,6 +13,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   rosbridge_server
   std_msgs
+  adl_error_detection
+  ras_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -73,6 +75,7 @@ add_service_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
+  ras_msgs
 )
 
 ################################################
