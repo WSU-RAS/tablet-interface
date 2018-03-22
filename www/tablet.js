@@ -3,7 +3,7 @@
 tabletResponse = new ROSLIB.ActionClient({
     ros : ros,
     serverName: '/tablet_response',
-    actionName: 'ras_msgs/TabletGotoAction'
+    actionName: 'ras_msgs/TabletAction'
 });
 
 // Note: this will later be some sort of action but I'll change that later
