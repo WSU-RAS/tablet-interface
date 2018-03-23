@@ -75,9 +75,17 @@ function playSound(audioURL) {
 function playVideo(url) {
     showOne('video');
 
+    // Kyoto connection too slow, so we host them on a local server there
+    var basename;
+    if (window.location.hostname == "wsu-ras-joule.kyoto.local") {
+        basename = 'http://kyoto.kyoto.local/videos/'
+    } else {
+        basename = 'http://casas.wsu.edu/smarthomestats/video/'
+    }
+
     var vid = document.getElementById("video-wrapper");
     var source = document.getElementById("video-source");
-    source.setAttribute('src', url);
+    source.setAttribute('src', basename + url);
     vid.onended = function() {
         respondVideoDone();
     };
