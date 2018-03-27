@@ -160,5 +160,53 @@ listener.subscribe(function(message) {
 
 });
 
+/**
+* Setup all visualization elements when the page is loaded.
+*/
+function viz() {
+document.getElementById("map").innerHTML = "";
+document.getElementById("mjpeg").innerHTML = "";
+
+// Create the main viewer.
+var mapviewer = new ROS2D.Viewer({
+  divID : 'map',
+  width : 640, 
+  height : 480
+});
+
+// Setup the nav client.
+var nav = NAV2D.OccupancyGridClientNav({
+  ros : ros,
+  rootObject : mapviewer.scene,
+  viewer : mapviewer,
+  serverName : '/move_base',
+  image: 'resources/turtlebot.png'
+});
+
+/*
+// Setup the map client.
+var gridClient = new ROS2D.OccupancyGridClient({
+  ros : ros,
+  rootObject : mapviewer.scene,
+  // Use this property in case of continuous updates			
+  continuous: true
+});
+// Scale the canvas to fit to the map
+gridClient.on('change', function() {
+  mapviewer.scaleToDimensions(gridClient.currentGrid.width, gridClient.currentGrid.height);
+  mapviewer.shift(gridClient.currentGrid.pose.position.x, gridClient.currentGrid.pose.position.y);
+});
+*/
+// Create the main viewer.
+var camviewer = new MJPEGCANVAS.Viewer({
+  divID : 'mjpeg',
+  host : window.location.hostname,
+  width : 640,
+  height : 480,
+  topic : '/detection_image',
+  interval : 1000
+});
+}
+
 // Connect to ROS
-autoReconnect(function () {});
+autoReconnect(function () { viz(); });
