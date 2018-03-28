@@ -111,10 +111,14 @@ var listener = new ROSLIB.Topic({
   messageType : 'turtlebot3_msgs/SensorState'
 });
 
+var battery_replace = false;
+
 listener.subscribe(function(message) {
   var testTime = new Date();
   var testTime2 = testTime.getTime();
   var batPercent = "";
+
+
 
   if(timeHolder + 1000 < testTime2)
   {
@@ -124,36 +128,46 @@ listener.subscribe(function(message) {
 
     if(message.battery > 4.2 * 3){
       batPercent = "100%";
+      battery_replace = false;
     }
     if(message.battery < 4.13 * 3){
-      batPercent = "90%";
+      batPercent = "85%";
+      battery_replace = false;
     }
     if(message.battery < 4.06 * 3){
-      batPercent = "80%";
+      batPercent = "60%";
+      battery_replace = false;
     }
     if(message.battery < 3.99 * 3){
-      batPercent = "70%";
+      batPercent = "45%";
+      battery_replace = false;
     }
     if(message.battery < 3.92 * 3){
-      batPercent = "60%";
+      batPercent = "30%";
+      battery_replace = false;
     }
     if(message.battery < 3.85 * 3){
-      batPercent = "50%";
+      batPercent = "15%";
+      battery_replace = false;
     }
     if(message.battery < 3.78 * 3){
-      batPercent = "40%";
+      batPercent = "5%";
+      if (battery_replace == false){
+        battery_replace = true;
+        alert("Please replace the battery! Plug Joule into wall and swap battery.");
+      }
     }
     if(message.battery < 3.71 * 3){
-      batPercent = "30%";
+      batPercent = "00%";
     }
     if(message.battery < 3.64 * 3){
-      batPercent = "20%";
+      batPercent = "-10%";
     }
     if(message.battery < 3.57 * 3){
-      batPercent = "10%";
+      batPercent = "-20%";
     }
     if(message.battery < 3.57 * 3){
-      batPercent = "0%";
+      batPercent = "-30%";
     }
     document.getElementById('batteryPercent').innerHTML = '<span class="badge badge-info">' + batPercent + '</span>';
 }
@@ -164,49 +178,49 @@ listener.subscribe(function(message) {
 * Setup all visualization elements when the page is loaded.
 */
 function viz() {
-document.getElementById("map").innerHTML = "";
-document.getElementById("mjpeg").innerHTML = "";
+    document.getElementById("map").innerHTML = "";
+    document.getElementById("mjpeg").innerHTML = "";
 
-// Create the main viewer.
-var mapviewer = new ROS2D.Viewer({
-  divID : 'map',
-  width : 640, 
-  height : 480
-});
+    // Create the main viewer.
+    var mapviewer = new ROS2D.Viewer({
+      divID : 'map',
+      width : 640, 
+      height : 480
+    });
 
-// Setup the nav client.
-var nav = NAV2D.OccupancyGridClientNav({
-  ros : ros,
-  rootObject : mapviewer.scene,
-  viewer : mapviewer,
-  serverName : '/move_base',
-  image: 'resources/turtlebot.png'
-});
+    // Setup the nav client.
+    var nav = NAV2D.OccupancyGridClientNav({
+      ros : ros,
+      rootObject : mapviewer.scene,
+      viewer : mapviewer,
+      serverName : '/move_base',
+      image: 'resources/turtlebot.png'
+    });
 
-/*
-// Setup the map client.
-var gridClient = new ROS2D.OccupancyGridClient({
-  ros : ros,
-  rootObject : mapviewer.scene,
-  // Use this property in case of continuous updates			
-  continuous: true
-});
-// Scale the canvas to fit to the map
-gridClient.on('change', function() {
-  mapviewer.scaleToDimensions(gridClient.currentGrid.width, gridClient.currentGrid.height);
-  mapviewer.shift(gridClient.currentGrid.pose.position.x, gridClient.currentGrid.pose.position.y);
-});
-*/
-// Create the main viewer.
-var camviewer = new MJPEGCANVAS.Viewer({
-  divID : 'mjpeg',
-  host : window.location.hostname,
-  width : 640,
-  height : 480,
-  topic : '/detection_image',
-  interval : 1000
-});
+    /*
+    // Setup the map client.
+    var gridClient = new ROS2D.OccupancyGridClient({
+      ros : ros,
+      rootObject : mapviewer.scene,
+      // Use this property in case of continuous updates			
+      continuous: true
+    });
+    // Scale the canvas to fit to the map
+    gridClient.on('change', function() {
+      mapviewer.scaleToDimensions(gridClient.currentGrid.width, gridClient.currentGrid.height);
+      mapviewer.shift(gridClient.currentGrid.pose.position.x, gridClient.currentGrid.pose.position.y);
+    });
+    */
+    // Create the main viewer.
+    var camviewer = new MJPEGCANVAS.Viewer({
+      divID : 'mjpeg',
+      host : window.location.hostname,
+      width : 640,
+      height : 480,
+      topic : '/detection_image',
+      interval : 1000
+    });
 }
 
-// Connect to ROS
-autoReconnect(function () { viz(); });
+// Connect to ROS - show camera/map stuff on connect
+autoReconnect(function () { }, function() { viz() });
