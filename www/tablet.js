@@ -72,9 +72,7 @@ function playSound(audioURL) {
     sendROSResponse("audioplay");
 }
 
-function playVideo(url) {
-    showOne('video');
-
+function getVideoBasename() {
     // Kyoto connection too slow, so we host them on a local server there
     var basename;
     if (window.location.hostname == "wsu-ras-joule.kyoto.local") {
@@ -82,6 +80,23 @@ function playVideo(url) {
     } else {
         basename = 'http://casas.wsu.edu/smarthomestats/video/'
     }
+    return basename;
+}
+
+function getImageBasename() {
+    // Kyoto connection too slow, so we host them on a local server there
+    var basename;
+    if (window.location.hostname == "wsu-ras-joule.kyoto.local") {
+        basename = 'http://kyoto.kyoto.local/pictures/'
+    } else {
+        basename = 'http://casas.wsu.edu/smarthomestats/pictures/'
+    }
+    return basename;
+}
+
+function playVideo(url) {
+    showOne('video');
+    basename = getVideoBasename();
 
     var vid = document.getElementById("video-wrapper");
     var source = document.getElementById("video-source");
@@ -95,17 +110,22 @@ function playVideo(url) {
 }
 
 // Show screen
-function showDefault() {
+function showDefault(happy) {
     showOne('default');
-    if (state.faceURL.length > 0) {
-        document.getElementById("default-face").src = state.faceURL;
-        document.getElementById("default-face").load();
-    }
+    basename = getImageBasename();
+    //if (state.faceURL.length > 0) {
+    if (happy == true)
+        document.getElementById("default-face").src = basename + 'blue_happy_with_mouth.jpg';
+    else
+        document.getElementById("default-face").src = basename + 'blue_happy_without_mouth.jpg';
+    //document.getElementById("default-face").load();
+    //}
 }
 function showChoice() {
     showOne('choice');
     playSound('resources/help-you.mp3');
-    document.getElementById("face").src = state.faceURL;
+    basename = getImageBasename();
+    document.getElementById("face").src = basename + 'blue_surprised_with_mouth.jpg';
 }
 function showOptions() {
     showOne('options');
@@ -114,7 +134,7 @@ function showOptions() {
     // Only show the "go to object" button if there is an object for this error
     if (state.objectName.length > 0) {
         document.getElementById("buttonGoTo").style.display = 'inline';
-        document.getElementById("object").innerHTML = state.objectName
+        document.getElementById("object").innerHTML = state.objectName;
     } else {
         document.getElementById("buttonGoTo").style.display = 'none';
     }
@@ -128,7 +148,7 @@ function respondChoice(choice) {
         showOptions();
     } else {
         sendROSResponse("no");
-        showDefault();
+        showDefault(false);
     }
 }
 function respondOptions(option) {
@@ -142,7 +162,8 @@ function respondOptions(option) {
             playVideo(state.videoStepURL);
             break;
         case "goto":
-            showDefault();
+            showDefault(false);
+            // TODO play "Follow me"
             break;
         case "complete":
             showDefault();
@@ -154,7 +175,7 @@ function respondOptions(option) {
 }
 function respondVideoDone() {
     sendROSResponse("videodone");
-    showDefault();
+    showDefault(false);
 }
 function respondAudioDone() {
     sendROSResponse("audiodone");
@@ -178,9 +199,10 @@ document.getElementById("buttonGoTo").onclick = function() {
 }
 document.getElementById("buttonComplete").onclick = function() {
     respondOptions("complete");
+    showDefault(true); // Show happy face
 }
 document.getElementById("buttonInit").onclick = function() {
-    showDefault();
+    showDefault(false);
     
     // This appears to fix the not playing on first call problem
     playSound("");
@@ -206,7 +228,7 @@ autoReconnect(function () {
 
         // Show desired screen
         switch (screen) {
-            case "default": showDefault(); break;
+            case "default": showDefault(false); break;
             case "choice":  showChoice();  break;
             case "options": showOptions(); break;
             default:

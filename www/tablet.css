@@ -14,6 +14,10 @@
     display: none;
 }
 
+#default-face, #face {
+    width: 30%;
+}
+
 /* Buttons */
 div.center {
     width: 98%;
