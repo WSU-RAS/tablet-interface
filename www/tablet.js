@@ -113,13 +113,10 @@ function playVideo(url) {
 function showDefault(happy) {
     showOne('default');
     basename = getImageBasename();
-    //if (state.faceURL.length > 0) {
     if (happy == true)
         document.getElementById("default-face").src = basename + 'blue_happy_with_mouth.jpg';
     else
         document.getElementById("default-face").src = basename + 'blue_happy_without_mouth.jpg';
-    //document.getElementById("default-face").load();
-    //}
 }
 function showChoice() {
     showOne('choice');
@@ -131,12 +128,17 @@ function showOptions() {
     showOne('options');
     playSound('resources/select-options.mp3');
 
-    // Only show the "go to object" button if there is an object for this error
-    if (state.objectName.length > 0) {
-        document.getElementById("buttonGoTo").style.display = 'inline';
-        document.getElementById("object").innerHTML = state.objectName;
+    // Only play if we have just navigated to an object
+    if (state.objectName == "done") {
+        playSound('resources/follow-me.mp3');
     } else {
-        document.getElementById("buttonGoTo").style.display = 'none';
+        // Only show the "go to object" button if there is an object for this error
+        if (state.objectName.length > 0) {
+            document.getElementById("buttonGoTo").style.display = 'inline';
+            document.getElementById("object").innerHTML = state.objectName;
+        } else {
+            document.getElementById("buttonGoTo").style.display = 'none';
+        }
     }
 }
 
@@ -163,7 +165,6 @@ function respondOptions(option) {
             break;
         case "goto":
             showDefault(false);
-            // TODO play "Follow me"
             break;
         case "complete":
             showDefault();
@@ -196,9 +197,11 @@ document.getElementById("buttonVideoStep").onclick = function() {
 }
 document.getElementById("buttonGoTo").onclick = function() {
     respondOptions("goto");
+    playSound('resources/follow-me.mp3');
 }
 document.getElementById("buttonComplete").onclick = function() {
     respondOptions("complete");
+    playSound('resources/okay-thank-you.mp3');
     showDefault(true); // Show happy face
 }
 document.getElementById("buttonInit").onclick = function() {
