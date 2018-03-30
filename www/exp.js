@@ -99,6 +99,9 @@ document.getElementById("waterPlantsStart").onclick = function() {
 document.getElementById("waterPlantsStop").onclick = function() {
     sendTask(0, 3, "STOP WATER PLANTS TASK");
 }
+document.getElementById("poweroff").onclick = function() {
+    poweroff();
+}
 
 
 //Access Battery Information
@@ -177,10 +180,12 @@ listener.subscribe(function(message) {
 /**
 * Setup all visualization elements when the page is loaded.
 */
-function viz() {
+function hideviz() {
     document.getElementById("map").innerHTML = "";
     document.getElementById("mjpeg").innerHTML = "";
+}
 
+function viz() {
     // Create the main viewer.
     var mapviewer = new ROS2D.Viewer({
       divID : 'map',
@@ -222,5 +227,26 @@ function viz() {
     });
 }
 
+// Calling a service
+// -----------------
+poweroffService = new ROSLIB.Service({
+    ros : ros,
+    name: '/poweroff',
+    serviceType: 'ras_msgs/Poweroff'
+});
+
+function poweroff() {
+    var request = new ROSLIB.ServiceRequest({});
+
+    poweroffService.callService(request, function(result) {
+        if (result.success == true) {
+            alert("Poweroff succeeded")
+        } else {
+            alert("Poweroff failed")
+        }
+    });
+}
+
+// Note: this will later be some sort of action but I'll change that later
 // Connect to ROS - show camera/map stuff on connect
-autoReconnect(function () { }, function() { viz() });
+autoReconnect(function () { hideviz(); }, function() { viz(); });
