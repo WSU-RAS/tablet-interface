@@ -12,6 +12,12 @@
     .btn{
        margin-bottom:8px;
    }
+  }
+  #batwarning {
+      color: white;
+      background-color: red;
+      display: none;
+  }
   </style>
 
   <script src="https://static.robotwebtools.org/EaselJS/current/easeljs.js"></script>
@@ -27,6 +33,10 @@
 <body>
   <div class="container-fluid">
     <div class="jumbotron">
+        <div id="batwarning">
+        <h1>Please replace the battery! Plug Joule into wall and swap battery.</h1>
+        </div>
+
       <h1 class="display-5">Experimentor UI</h1>
       <p class="lead">This is used by the experimenter to start and end task during RAS Experiments.</p>
       <hr class="my-2">

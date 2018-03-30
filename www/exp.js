@@ -115,13 +115,11 @@ var listener = new ROSLIB.Topic({
 });
 
 var battery_replace = false;
-
+var showed_alert = false;
 listener.subscribe(function(message) {
   var testTime = new Date();
   var testTime2 = testTime.getTime();
   var batPercent = "";
-
-
 
   if(timeHolder + 1000 < testTime2)
   {
@@ -132,47 +130,65 @@ listener.subscribe(function(message) {
     if(message.battery > 4.2 * 3){
       batPercent = "100%";
       battery_replace = false;
+      showed_alert = false; // replaced battery
     }
-    if(message.battery < 4.13 * 3){
-      batPercent = "85%";
+    else if(message.battery > 4.13 * 3){
+      batPercent = "90%";
       battery_replace = false;
+      showed_alert = false; // replaced battery
     }
-    if(message.battery < 4.06 * 3){
+    else if(message.battery > 4.06 * 3){
+      batPercent = "80%";
+      battery_replace = false;
+      showed_alert = false; // replaced battery
+    }
+    else if(message.battery > 3.99 * 3){
+      batPercent = "70%";
+      battery_replace = false;
+      showed_alert = false; // replaced battery
+    }
+    else if(message.battery > 3.92 * 3){
       batPercent = "60%";
       battery_replace = false;
     }
-    if(message.battery < 3.99 * 3){
-      batPercent = "45%";
+    else if(message.battery > 3.85 * 3){
+      batPercent = "50%";
       battery_replace = false;
     }
-    if(message.battery < 3.92 * 3){
+    else if(message.battery > 3.78 * 3){
+      batPercent = "40%";
+      battery_replace = false;
+    }
+    // Below 11.13 or so you should replace the battery since at 11 volts the
+    // servos will no longer work and you'll have to restart everything
+    else if(message.battery > 3.71 * 3){
       batPercent = "30%";
-      battery_replace = false;
+      battery_replace = true;
     }
-    if(message.battery < 3.85 * 3){
-      batPercent = "15%";
-      battery_replace = false;
+    else if(message.battery > 3.64 * 3){
+      batPercent = "20%";
+      battery_replace = true;
     }
-    if(message.battery < 3.78 * 3){
-      batPercent = "5%";
-      if (battery_replace == false){
-        battery_replace = true;
-        alert("Please replace the battery! Plug Joule into wall and swap battery.");
-      }
+    else if(message.battery > 3.57 * 3){
+      batPercent = "10%";
+      battery_replace = true;
     }
-    if(message.battery < 3.71 * 3){
-      batPercent = "00%";
+    else {
+      batPercent = "0%";
+      battery_replace = true;
     }
-    if(message.battery < 3.64 * 3){
-      batPercent = "-10%";
-    }
-    if(message.battery < 3.57 * 3){
-      batPercent = "-20%";
-    }
-    if(message.battery < 3.57 * 3){
-      batPercent = "-30%";
-    }
+
     document.getElementById('batteryPercent').innerHTML = '<span class="badge badge-info">' + batPercent + '</span>';
+
+    if (battery_replace == true && showed_alert == false) {
+        showed_alert = true;
+        alert("Please replace the battery! Plug Joule into wall and swap battery.");
+    }
+
+    if (battery_replace)
+        document.getElementById('batwarning').style.display = 'block';
+    else
+        document.getElementById('batwarning').style.display = 'none';
 }
 
 });
