@@ -95,17 +95,27 @@ function getBasename() {
 
 function playVideo(url) {
     showOne('video');
-    basename = getBasename();
 
-    var vid = document.getElementById("video-wrapper");
-    var source = document.getElementById("video-source");
-    source.setAttribute('src', basename + 'videos/' + url);
-    vid.onended = function() {
+    if (url == "") {
+        // We're done since apparently we don't have a video for this error
         respondVideoDone();
-    };
-    vid.load();
-    vid.play();
-    //sendROSResponse("videoplay");
+    } else {
+        basename = getBasename();
+
+        var vid = document.getElementById("video-wrapper");
+        var source = document.getElementById("video-source");
+        source.setAttribute('src', basename + 'videos/' + url);
+        vid.onended = function() {
+            respondVideoDone();
+        };
+        vid.addEventListener('error', function() {
+            // Not really... but we'd rather not have everything die at this point
+            respondVideoDone();
+        });
+        vid.load();
+        vid.play();
+        //sendROSResponse("videoplay");
+    }
 }
 
 // Show screen
