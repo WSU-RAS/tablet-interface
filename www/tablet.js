@@ -8,6 +8,8 @@ tabletResponse = new ROSLIB.ActionClient({
 
 // Note: this will later be some sort of action but I'll change that later
 function sendROSResponse(msg) {
+    var timeout = 1000; // Milliseconds
+
     var goal = new ROSLIB.Goal({
         actionClient: tabletResponse,
         goalMessage: {
@@ -20,10 +22,18 @@ function sendROSResponse(msg) {
     });
 
     goal.on('result', function(result) {
-        console.log('Result: ' + result.success);
+        console.log('Result for '+msg+': ' + result.success);
     });
 
-    goal.send();
+    // Retry on timeout
+    goal.on('timeout', function(result) {
+        console.log('Timeout, trying again');
+        goal.send(timeout);
+    });
+
+    // Try to send the goal
+    goal.send(timeout);
+    console.log('Sending: '+msg)
 }
 
 // Commands for Web UI
@@ -69,60 +79,49 @@ function playSound(audioURL) {
     };
     sound.load();
     sound.play();
-    sendROSResponse("audioplay");
+    //sendROSResponse("audioplay");
 }
 
-function getVideoBasename() {
+function getBasename() {
     // Kyoto connection too slow, so we host them on a local server there
     var basename;
     if (window.location.hostname == "wsu-ras-joule.kyoto.local") {
-        basename = 'http://kyoto.kyoto.local/videos/'
+        basename = 'http://kyoto.kyoto.local/'
     } else {
-        basename = 'http://casas.wsu.edu/smarthomestats/videos/'
-    }
-    return basename;
-}
-
-function getImageBasename() {
-    // Kyoto connection too slow, so we host them on a local server there
-    var basename;
-    if (window.location.hostname == "wsu-ras-joule.kyoto.local") {
-        basename = 'http://kyoto.kyoto.local/pictures/'
-    } else {
-        basename = 'http://casas.wsu.edu/smarthomestats/pictures/'
+        basename = 'http://casas.wsu.edu/smarthomestats/'
     }
     return basename;
 }
 
 function playVideo(url) {
     showOne('video');
-    basename = getVideoBasename();
+    basename = getBasename();
 
     var vid = document.getElementById("video-wrapper");
     var source = document.getElementById("video-source");
-    source.setAttribute('src', basename + url);
+    source.setAttribute('src', basename + 'videos/' + url);
     vid.onended = function() {
         respondVideoDone();
     };
     vid.load();
     vid.play();
-    sendROSResponse("videoplay");
+    //sendROSResponse("videoplay");
 }
 
 // Show screen
 function showDefault(happy) {
     showOne('default');
-    basename = getImageBasename();
+    basename = getBasename();
     if (happy == true)
-        document.getElementById("default-face").src = basename + 'blue_happy_with_mouth.jpg';
+        document.getElementById("default-face").src = basename + 'pictures/blue_happy_with_mouth.jpg';
     else
-        document.getElementById("default-face").src = basename + 'blue_happy_without_mouth.jpg';
+        document.getElementById("default-face").src = basename + 'pictures/blue_happy_without_mouth.jpg';
 }
 function showChoice() {
     showOne('choice');
     playSound('resources/help-you.mp3');
-    basename = getImageBasename();
-    document.getElementById("face").src = basename + 'blue_surprised_with_mouth.jpg';
+    basename = getBasename();
+    document.getElementById("face").src = basename + 'pictures/blue_surprised_with_mouth.jpg';
 }
 function showOptions() {
     showOne('options');
@@ -155,8 +154,6 @@ function respondChoice(choice) {
     }
 }
 function respondOptions(option) {
-    sendROSResponse(option);
-
     switch (option) {
         case "watchfull":
             playVideo(state.videoFullURL);
@@ -166,9 +163,11 @@ function respondOptions(option) {
             break;
         case "goto":
             showDefault(false);
+            sendROSResponse(option);
             break;
         case "complete":
             showDefault();
+            sendROSResponse(option);
             break;
         default:
             console.log("Unknown option selection");
@@ -180,7 +179,7 @@ function respondVideoDone() {
     showDefault(false);
 }
 function respondAudioDone() {
-    sendROSResponse("audiodone");
+    //sendROSResponse("audiodone");
 }
 
 // Selecting buttons
@@ -202,8 +201,8 @@ document.getElementById("buttonGoTo").onclick = function() {
 }
 document.getElementById("buttonComplete").onclick = function() {
     respondOptions("complete");
-    playSound('resources/okay-thank-you.mp3');
     showDefault(true); // Show happy face
+    playSound('resources/okay-thank-you.mp3');
 }
 document.getElementById("buttonInit").onclick = function() {
     showDefault(false);
@@ -213,7 +212,7 @@ document.getElementById("buttonInit").onclick = function() {
 }
 
 // Connect to ROS and automatically reconnect, creating the tablet service each time
-autoReconnect(function () {
+autoReconnect(function() { }, function () {
     // Advertising a Service
     // ---------------------
     // The Service object does double duty for both calling and advertising services
