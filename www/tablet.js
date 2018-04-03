@@ -78,7 +78,7 @@ function getVideoBasename() {
     if (window.location.hostname == "wsu-ras-joule.kyoto.local") {
         basename = 'http://kyoto.kyoto.local/videos/'
     } else {
-        basename = 'http://casas.wsu.edu/smarthomestats/video/'
+        basename = 'http://casas.wsu.edu/smarthomestats/videos/'
     }
     return basename;
 }
@@ -131,6 +131,7 @@ function showOptions() {
     // Only play if we have just navigated to an object
     if (state.objectName == "done") {
         playSound('resources/follow-me.mp3');
+        document.getElementById("buttonGoTo").style.display = 'none';
     } else {
         // Only show the "go to object" button if there is an object for this error
         if (state.objectName.length > 0) {
