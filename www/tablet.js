@@ -1,4 +1,4 @@
-// Calling a service
+// Calling an action
 // -----------------
 tabletResponse = new ROSLIB.ActionClient({
     ros : ros,
@@ -6,9 +6,8 @@ tabletResponse = new ROSLIB.ActionClient({
     actionName: 'ras_msgs/TabletAction'
 });
 
-// Note: this will later be some sort of action but I'll change that later
 function sendROSResponse(msg) {
-    var timeout = 1000; // Milliseconds
+    var timeout = 5000; // Milliseconds
 
     var goal = new ROSLIB.Goal({
         actionClient: tabletResponse,
@@ -123,15 +122,15 @@ function showDefault(happy) {
     showOne('default');
     basename = getBasename();
     if (happy == true)
-        document.getElementById("default-face").src = basename + 'pictures/blue_happy_with_mouth.jpg';
+        document.getElementById("default-face").src = basename + 'pictures/black_happy_with_mouth.jpg';
     else
-        document.getElementById("default-face").src = basename + 'pictures/blue_happy_without_mouth.jpg';
+        document.getElementById("default-face").src = basename + 'pictures/black_happy_without_mouth.jpg';
 }
 function showChoice() {
     showOne('choice');
     playSound('resources/help-you.mp3');
     basename = getBasename();
-    document.getElementById("face").src = basename + 'pictures/blue_surprised_with_mouth.jpg';
+    document.getElementById("face").src = basename + 'pictures/black_surprised_with_mouth.jpg';
 }
 function showOptions() {
     showOne('options');

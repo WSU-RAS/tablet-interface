@@ -99,6 +99,9 @@ document.getElementById("waterPlantsStart").onclick = function() {
 document.getElementById("waterPlantsStop").onclick = function() {
     sendTask(0, 3, "STOP WATER PLANTS TASK");
 }
+document.getElementById("gotoBase").onclick = function() {
+    gotoBase();
+}
 document.getElementById("poweroff").onclick = function() {
     poweroff();
 }
@@ -192,6 +195,43 @@ listener.subscribe(function(message) {
 }
 
 });
+
+// Calling an action to return to base
+// -----------------
+gotoBaseAction = new ROSLIB.ActionClient({
+    ros : ros,
+    serverName: '/goto_base',
+    actionName: 'ras_msgs/TabletAction'
+});
+
+function gotoBase() {
+    var timeout = 5000; // Milliseconds
+
+    var goal = new ROSLIB.Goal({
+        actionClient: gotoBaseAction,
+        goalMessage: {
+            response: "goto base"
+        }
+    });
+
+    goal.on('feedback', function(feedback) {
+        console.log('Feedback: ' + feedback.text);
+    });
+
+    goal.on('result', function(result) {
+        console.log('Result for going back to base: ' + result.success);
+    });
+
+    // Retry on timeout
+    goal.on('timeout', function(result) {
+        console.log('Timeout, trying again');
+        goal.send(timeout);
+    });
+
+    // Try to send the goal
+    goal.send(timeout);
+    console.log('Going back to base');
+}
 
 /**
 * Setup all visualization elements when the page is loaded.
