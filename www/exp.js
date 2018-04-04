@@ -305,4 +305,7 @@ function poweroff() {
 
 // Note: this will later be some sort of action but I'll change that later
 // Connect to ROS - show camera/map stuff on connect
-autoReconnect(function () { hideviz(); }, function() { viz(); });
+//autoReconnect(function () { hideviz(); }, function() { viz(); });
+
+// For now don't snow when teleopping
+autoReconnect(function () { }, function() { });
