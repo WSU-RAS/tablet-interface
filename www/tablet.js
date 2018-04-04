@@ -139,7 +139,7 @@ function showOptions() {
 
     // Only play if we have just navigated to an object
     if (state.objectName == "done") {
-        playSound('resources/follow-me.mp3');
+        playSound('resources/here-you-go.mp3');
         document.getElementById("buttonGoTo").style.display = 'none';
     } else {
         // Only show the "go to object" button if there is an object for this error
