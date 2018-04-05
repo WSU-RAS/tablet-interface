@@ -166,9 +166,11 @@ function respondOptions(option) {
     switch (option) {
         case "watchfull":
             playVideo(state.videoFullURL);
+            sendROSResponse(option);
             break;
         case "watchstep":
             playVideo(state.videoStepURL);
+            sendROSResponse(option);
             break;
         case "goto":
             showDefault(false);
