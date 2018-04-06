@@ -166,7 +166,7 @@ listener.subscribe(function(message) {
     // servos will no longer work and you'll have to restart everything
     else if(message.battery > 3.71 * 3){
       batPercent = "30%";
-      battery_replace = true;
+      battery_replace = false;
     }
     else if(message.battery > 3.64 * 3){
       batPercent = "20%";
